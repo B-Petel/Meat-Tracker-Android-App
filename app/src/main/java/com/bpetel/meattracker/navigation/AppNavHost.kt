@@ -5,27 +5,23 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.bpetel.meattracker.presentation.AddMeatEntryScreen
 import com.bpetel.meattracker.presentation.HistoryScreen
 import com.bpetel.meattracker.presentation.HomeScreen
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    startDestination: DestinationItem,
+    startDestination: Screen,
     modifier: Modifier = Modifier
 ) {
     NavHost(
         navController,
-        startDestination = startDestination.route,
+        startDestination = startDestination,
         modifier
     ) {
-        DestinationItem.entries.forEach { destination ->
-            composable(destination.route) {
-                when (destination) {
-                    DestinationItem.HOME -> HomeScreen()
-                    DestinationItem.HISTORY -> HistoryScreen()
-                }
-            }
-        }
+        composable<Screen.Home> { HomeScreen() }
+        composable<Screen.History> { HistoryScreen() }
+        composable<Screen.AddMeatEntry> { AddMeatEntryScreen() }
     }
 }
