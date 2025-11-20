@@ -81,7 +81,8 @@ class MainActivity : ComponentActivity() {
                     AppNavHost(
                         navController,
                         startDestination,
-                        Modifier.padding(innerPadding)
+                        Modifier.padding(innerPadding),
+                        onSubmit = { navController.navigate(Screen.History) }
                     )
                 }
             }

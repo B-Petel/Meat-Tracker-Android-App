@@ -1,0 +1,29 @@
+package com.bpetel.meattracker.data
+
+import android.util.Log
+import com.bpetel.meattracker.domain.LocalRepository
+import kotlinx.coroutines.flow.Flow
+
+class LocalRepositoryImpl(
+    private val db: AppDatabase
+): LocalRepository {
+
+    lateinit var meatsFlow: Flow<List<Meat>>
+
+    override fun getHistory(): Flow<List<Meat>> {
+        try {
+            meatsFlow = db.meatDao().getAll()
+        } catch (e: Exception) {
+            Log.e("Database Error", "Error retrieving entry history: " + e.message);
+        }
+        return meatsFlow
+    }
+
+    override suspend fun insert(meat: Meat) {
+        try {
+            db.meatDao().insert(meat)
+        } catch (e: Exception) {
+            Log.e("Database Error", "Error inserting meat entry: " + e.message);
+        }
+    }
+}

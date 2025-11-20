@@ -1,16 +1,19 @@
 package com.bpetel.meattracker.data
 
+import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
+@Dao
 interface UserDao {
     @Query("SELECT * FROM user")
-    fun get(): User
+    fun get(): Flow<User>
 
     @Insert
-    fun insert(): User
+    suspend fun insert(user: User)
 
     @Update
-    fun update(user: User)
+    suspend fun update(user: User)
 }

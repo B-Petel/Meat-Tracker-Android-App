@@ -13,7 +13,8 @@ import com.bpetel.meattracker.presentation.HomeScreen
 fun AppNavHost(
     navController: NavHostController,
     startDestination: Screen,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSubmit: () -> Unit
 ) {
     NavHost(
         navController,
@@ -22,6 +23,10 @@ fun AppNavHost(
     ) {
         composable<Screen.Home> { HomeScreen() }
         composable<Screen.History> { HistoryScreen() }
-        composable<Screen.AddMeatEntry> { AddMeatEntryScreen() }
+        composable<Screen.AddMeatEntry> {
+            AddMeatEntryScreen(
+                onSubmit
+            )
+        }
     }
 }
