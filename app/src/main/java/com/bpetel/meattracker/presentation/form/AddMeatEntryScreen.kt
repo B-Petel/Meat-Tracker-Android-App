@@ -1,4 +1,4 @@
-package com.bpetel.meattracker.presentation
+package com.bpetel.meattracker.presentation.form
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,21 +29,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.bpetel.meattracker.FormState
 import com.bpetel.meattracker.MainViewModel
-import com.bpetel.meattracker.MeatType
+import com.bpetel.meattracker.presentation.utils.MeatType
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AddMeatEntryScreen(
+    id: Int?,
+    type: String,
+    parts: String,
+    weight: String,
     onSubmit: () -> Unit
 ) {
     val viewModel: MainViewModel = koinViewModel()
     var typeExpanded by remember { mutableStateOf(false) }
     val stateVertical = rememberScrollState(0)
-    var type by remember { mutableStateOf("") }
-    var parts by remember { mutableStateOf("") }
-    var weight by remember { mutableStateOf("") }
+    var type by remember { mutableStateOf(type) }
+    var parts by remember { mutableStateOf(parts) }
+    var weight by remember { mutableStateOf(weight) }
     var weightExpanded by remember { mutableStateOf(false) }
     var unit by remember { mutableStateOf("g") }
 
@@ -52,9 +55,7 @@ fun AddMeatEntryScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-
-        ) {
+        Box {
             OutlinedTextField (
                 modifier = Modifier.fillMaxWidth(),
                 value = type,
@@ -104,9 +105,7 @@ fun AddMeatEntryScreen(
             }
         )
 
-        Box(
-
-        ) {
+        Box {
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = weight,
@@ -152,6 +151,7 @@ fun AddMeatEntryScreen(
             onClick = {
                 viewModel.onSubmit(
                     FormState(
+                        id = id,
                         type = type,
                         mealPart = parts,
                         weightInGrams = weight

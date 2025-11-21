@@ -14,7 +14,7 @@ class LocalRepositoryImpl(
         try {
             meatsFlow = db.meatDao().getAll()
         } catch (e: Exception) {
-            Log.e("Database Error", "Error retrieving entry history: " + e.message);
+            Log.e("Database Error", "Error retrieving entry history: " + e.message)
         }
         return meatsFlow
     }
@@ -22,6 +22,22 @@ class LocalRepositoryImpl(
     override suspend fun insert(meat: Meat) {
         try {
             db.meatDao().insert(meat)
+        } catch (e: Exception) {
+            Log.e("Database Error", "Error inserting meat entry: " + e.message)
+        }
+    }
+
+    override suspend fun update(meat: Meat) {
+        try {
+            db.meatDao().update(meat)
+        } catch (e: Exception) {
+            Log.e("Database Error", "Error inserting meat entry: " + e.message);
+        }
+    }
+
+    override suspend fun delete(meat: Meat) {
+        try {
+            db.meatDao().delete(meat)
         } catch (e: Exception) {
             Log.e("Database Error", "Error inserting meat entry: " + e.message);
         }
