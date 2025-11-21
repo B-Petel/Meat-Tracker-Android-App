@@ -5,15 +5,18 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.bpetel.meattracker.presentation.AddMeatEntryScreen
-import com.bpetel.meattracker.presentation.HistoryScreen
-import com.bpetel.meattracker.presentation.HomeScreen
+import androidx.navigation.toRoute
+import com.bpetel.meattracker.data.Meat
+import com.bpetel.meattracker.presentation.form.AddMeatEntryScreen
+import com.bpetel.meattracker.presentation.history.HistoryScreen
+import com.bpetel.meattracker.presentation.home.HomeScreen
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     startDestination: Screen,
     modifier: Modifier = Modifier,
+    onEdit: (Meat) -> Unit,
     onSubmit: () -> Unit
 ) {
     NavHost(
@@ -22,10 +25,20 @@ fun AppNavHost(
         modifier
     ) {
         composable<Screen.Home> { HomeScreen() }
-        composable<Screen.History> { HistoryScreen() }
+        composable<Screen.History> {
+            HistoryScreen(
+                onEdit = onEdit
+            )
+        }
         composable<Screen.AddMeatEntry> {
+            val args = it.toRoute<Screen.AddMeatEntry>()
+
             AddMeatEntryScreen(
-                onSubmit
+                args.id,
+                args.type,
+                args.parts,
+                args.weight,
+                onSubmit = onSubmit
             )
         }
     }

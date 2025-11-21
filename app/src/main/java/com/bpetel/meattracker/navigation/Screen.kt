@@ -9,5 +9,10 @@ sealed class Screen() {
     @Serializable
     data object History: Screen()
     @Serializable
-    data object AddMeatEntry: Screen()
+    data class AddMeatEntry(
+        val id: Int? = null,
+        val type: String = "",
+        val parts: String = "",
+        val weight: String = ""
+    ): Screen()
 }

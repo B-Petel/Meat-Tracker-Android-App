@@ -1,4 +1,4 @@
-package com.bpetel.meattracker.presentation
+package com.bpetel.meattracker.presentation.home
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
