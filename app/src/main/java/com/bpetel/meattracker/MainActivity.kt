@@ -28,6 +28,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
             val navController = rememberNavController()
             val startDestination = Screen.Home
 
@@ -39,7 +40,6 @@ class MainActivity : ComponentActivity() {
                             BottomNavItem.Home,
                             BottomNavItem.History
                         )
-
                         NavigationBar {
                             val navBackStackEntry by navController.currentBackStackEntryAsState()
                             val currentRoute = navBackStackEntry?.destination?.route
@@ -69,7 +69,9 @@ class MainActivity : ComponentActivity() {
                     },
                     floatingActionButton = {
                         FloatingActionButton(
-                            onClick = { navController.navigate(Screen.AddMeatEntry) },
+                            onClick = {
+                                navController.navigate(Screen.AddMeatEntry())
+                            }
                         ) {
                             Icon(
                                 Icons.Filled.Add,
@@ -82,6 +84,16 @@ class MainActivity : ComponentActivity() {
                         navController,
                         startDestination,
                         Modifier.padding(innerPadding),
+                        onEdit = {
+                            navController.navigate(
+                                Screen.AddMeatEntry(
+                                    it.id,
+                                    it.type,
+                                    it.mealPart,
+                                    it.weightInGrams.toString()
+                                )
+                            )
+                        },
                         onSubmit = { navController.navigate(Screen.History) }
                     )
                 }

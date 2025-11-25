@@ -7,4 +7,8 @@ interface LocalRepository {
     fun getHistory(): Flow<List<Meat>>
 
     suspend fun insert(meat: Meat)
+
+    suspend fun update(meat: Meat)
+
+    suspend fun delete(meat: Meat)
 }
