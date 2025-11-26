@@ -3,16 +3,21 @@ package com.bpetel.meattracker.data
 import android.util.Log
 import com.bpetel.meattracker.domain.LocalRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 
 class LocalRepositoryImpl(
     private val db: AppDatabase
 ): LocalRepository {
 
-    lateinit var meatsFlow: Flow<List<Meat>>
+    lateinit var meatsFlow: Flow<Map<LocalDate, List<Meat>>>
 
-    override fun getHistory(): Flow<List<Meat>> {
+
+    override fun getHistory(): Flow<Map<LocalDate, List<Meat>>> {
         try {
-            meatsFlow = db.meatDao().getAll()
+            meatsFlow = db.meatDao().getAll().map {
+                it.groupBy { it.localDate }
+            }
         } catch (e: Exception) {
             Log.e("Database Error", "Error retrieving entry history: " + e.message)
         }

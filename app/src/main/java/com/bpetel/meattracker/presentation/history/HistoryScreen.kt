@@ -1,6 +1,7 @@
 package com.bpetel.meattracker.presentation.history
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -31,6 +33,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
@@ -38,10 +42,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.bpetel.meattracker.MainViewModel
 import com.bpetel.meattracker.data.Meat
-import com.bpetel.meattracker.presentation.history.DragAnchors
 import com.bpetel.meattracker.presentation.utils.GetMeatIcon
+import com.bpetel.meattracker.presentation.utils.LocalDateToRelativeDateString.toRelativeDateString
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import java.time.LocalDate
 import java.util.Locale.getDefault
 import kotlin.math.roundToInt
 
@@ -52,21 +57,25 @@ fun HistoryScreen(
     val viewModel: MainViewModel = koinViewModel()
     val state = viewModel.state.collectAsState()
 
-    HistoryContent(onEdit,viewModel,state.value)
+    HistoryContent(onEdit,viewModel, state.value)
 }
 
 @Composable
 fun HistoryContent(
     onEdit: (Meat) -> Unit,
     viewModel: MainViewModel,
-    state: List<Meat>
+    state: Map<LocalDate, List<Meat>>
 ) {
-
     LazyColumn {
-        items(state) { meat ->
+        state.forEach { map ->
+            item {
+                Text(map.key.toRelativeDateString())
+                HorizontalDivider()
+            }
 
-            HistoryDraggableBox(onEdit,viewModel, meat)
-            HorizontalDivider()
+            items(map.value) { meat ->
+                HistoryDraggableBox(onEdit,viewModel, meat)
+            }
         }
     }
 }
@@ -102,7 +111,7 @@ fun HistoryDraggableBox(
         }
     }
     Box(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier.padding(bottom = 8.dp)
     ) {
         HistoryItem(meat = meat, dragState = dragState)
         HistoryDragItem(onEdit,viewModel, meat, dragState = dragState, offsetSize = offsetSize)
@@ -137,13 +146,10 @@ fun HistoryItem(
                 text = meat.type
             )
             Text(
-                meat.mealPart
+                meat.meatPart
             )
             Text(
                 meat.weightInGrams.toString()
-            )
-            Text(
-                "Il y a 2 jours"
             )
         }
     }

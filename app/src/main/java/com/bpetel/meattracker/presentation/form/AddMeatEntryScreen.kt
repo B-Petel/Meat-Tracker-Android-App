@@ -38,17 +38,19 @@ fun AddMeatEntryScreen(
     id: Int?,
     type: String,
     parts: String,
-    weight: String,
+    weight: Int,
     onSubmit: () -> Unit
 ) {
     val viewModel: MainViewModel = koinViewModel()
-    var typeExpanded by remember { mutableStateOf(false) }
     val stateVertical = rememberScrollState(0)
+
     var type by remember { mutableStateOf(type) }
     var parts by remember { mutableStateOf(parts) }
     var weight by remember { mutableStateOf(weight) }
-    var weightExpanded by remember { mutableStateOf(false) }
-    var unit by remember { mutableStateOf("g") }
+    var weightUnit by remember { mutableStateOf(weight.toString()) }
+
+    var typeExpanded by remember { mutableStateOf(false) }
+
 
     Column(
         modifier = Modifier.fillMaxSize().padding(32.dp),
@@ -108,41 +110,18 @@ fun AddMeatEntryScreen(
         Box {
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = weight,
-                onValueChange = { weight = it },
+                value = weightUnit,
+                onValueChange = { weightUnit = it},
                 label = {
                     Text(
                         "Weight"
                     )
                 },
-                trailingIcon = {
-                    Icon(
-                        Icons.Default.ArrowDropDown,
-                        "",
-                        Modifier.clickable { weightExpanded = !weightExpanded }
-                    )
-                    DropdownMenu (
-                        expanded = weightExpanded,
-                        onDismissRequest = { weightExpanded = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("g") },
-                            onClick = {
-                                unit = "g"
-                                weightExpanded = !weightExpanded
-                            }
-                        )
-                        HorizontalDivider()
-                        DropdownMenuItem(
-                            text = { Text("kg") },
-                            onClick = {
-                                unit = "kg"
-                                weightExpanded = !weightExpanded
-                            }
-                        )
-                    }
+                suffix = {
+                    if (weight <= 1000)
+                        Text("g")
+                    else Text("kg")
                 },
-                suffix = { Text(unit) },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             )
         }
@@ -153,7 +132,7 @@ fun AddMeatEntryScreen(
                     FormState(
                         id = id,
                         type = type,
-                        mealPart = parts,
+                        meatParts = parts,
                         weightInGrams = weight
                     )
                 )
