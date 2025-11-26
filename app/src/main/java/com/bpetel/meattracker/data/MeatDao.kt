@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MeatDao {
-    @Query("SELECT * FROM meat")
+    @Query("SELECT * FROM meat ORDER BY date DESC")
     fun getAll(): Flow<List<Meat>>
 
     @Insert

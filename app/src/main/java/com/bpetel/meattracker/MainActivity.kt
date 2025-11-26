@@ -89,8 +89,8 @@ class MainActivity : ComponentActivity() {
                                 Screen.AddMeatEntry(
                                     it.id,
                                     it.type,
-                                    it.mealPart,
-                                    it.weightInGrams.toString()
+                                    it.meatPart,
+                                    it.weightInGrams
                                 )
                             )
                         },

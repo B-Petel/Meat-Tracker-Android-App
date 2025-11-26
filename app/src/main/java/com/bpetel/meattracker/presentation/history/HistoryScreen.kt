@@ -33,15 +33,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.bpetel.meattracker.MainViewModel
 import com.bpetel.meattracker.data.Meat
-import com.bpetel.meattracker.presentation.history.DragAnchors
 import com.bpetel.meattracker.presentation.utils.GetMeatIcon
+import com.bpetel.meattracker.presentation.utils.LocalDateToRelativeDateString.toRelativeDateString
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import java.time.LocalDate
 import java.util.Locale.getDefault
 import kotlin.math.roundToInt
 
@@ -52,21 +56,33 @@ fun HistoryScreen(
     val viewModel: MainViewModel = koinViewModel()
     val state = viewModel.state.collectAsState()
 
-    HistoryContent(onEdit,viewModel,state.value)
+    HistoryContent(onEdit,viewModel, state.value)
 }
 
 @Composable
 fun HistoryContent(
     onEdit: (Meat) -> Unit,
     viewModel: MainViewModel,
-    state: List<Meat>
+    state: Map<LocalDate, List<Meat>>
 ) {
+    Column() {
+        Text(
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+            text = "Historique",
+            fontSize = TextUnit(32f, TextUnitType.Sp),
+            fontWeight = FontWeight.Bold
+        )
+        LazyColumn {
+            state.forEach { map ->
+                item {
+                    Text(map.key.toRelativeDateString())
+                    HorizontalDivider()
+                }
 
-    LazyColumn {
-        items(state) { meat ->
-
-            HistoryDraggableBox(onEdit,viewModel, meat)
-            HorizontalDivider()
+                items(map.value) { meat ->
+                    HistoryDraggableBox(onEdit,viewModel, meat)
+                }
+            }
         }
     }
 }
@@ -102,7 +118,7 @@ fun HistoryDraggableBox(
         }
     }
     Box(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier.padding(bottom = 8.dp)
     ) {
         HistoryItem(meat = meat, dragState = dragState)
         HistoryDragItem(onEdit,viewModel, meat, dragState = dragState, offsetSize = offsetSize)
@@ -137,13 +153,11 @@ fun HistoryItem(
                 text = meat.type
             )
             Text(
-                meat.mealPart
+                meat.meatPart
             )
             Text(
-                meat.weightInGrams.toString()
-            )
-            Text(
-                "Il y a 2 jours"
+                if (meat.weightInGrams < 1000) "${meat.weightInGrams} g"
+                        else "${meat.weightInGrams/1000} kg"
             )
         }
     }

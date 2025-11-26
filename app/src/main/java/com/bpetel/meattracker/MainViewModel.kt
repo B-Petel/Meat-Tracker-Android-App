@@ -3,46 +3,45 @@ package com.bpetel.meattracker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bpetel.meattracker.data.Meat
-import com.bpetel.meattracker.domain.LocalRepository
+import com.bpetel.meattracker.domain.usecase.DeleteMeatEntryUseCase
+import com.bpetel.meattracker.domain.usecase.GetMeatHistoryPerDateUseCase
+import com.bpetel.meattracker.domain.usecase.SaveMeatEntryUseCase
 import com.bpetel.meattracker.presentation.form.FormState
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class MainViewModel(
-    private val repo: LocalRepository
+    getMeatUseCase: GetMeatHistoryPerDateUseCase,
+    private val saveMeatUseCase: SaveMeatEntryUseCase,
+    private val deleteMeatUseCase: DeleteMeatEntryUseCase
 ): ViewModel() {
-    val state = repo.getHistory().stateIn(
+
+    val state = getMeatUseCase.invoke().stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5.seconds),
-        emptyList()
+        emptyMap()
     )
 
     fun onSubmit(formState: FormState) {
-        val newMeat = Meat(
+        val meat = Meat(
             id = formState.id ?: 0,
             type = formState.type,
-            mealPart = formState.mealPart,
-            weightInGrams = formState.weightInGrams.toIntOrNull() ?: 0,
+            meatPart = formState.meatParts,
+            weightInGrams = formState.weightInGrams,
             date = System.currentTimeMillis()
         )
 
         viewModelScope.launch {
-            if (formState.id == null) {
-                repo.insert(newMeat)
-            } else {
-                repo.update(newMeat)
-            }
+            saveMeatUseCase.invoke(id = formState.id, meat = meat)
         }
     }
 
     fun onDelete(meat: Meat) {
         viewModelScope.launch {
-            repo.delete(meat)
+            deleteMeatUseCase(meat)
         }
     }
 }
