@@ -9,18 +9,25 @@ import java.time.LocalDate
 class LocalRepositoryImpl(
     private val db: AppDatabase
 ): LocalRepository {
+    lateinit var listMeatByDate: Flow<Map<LocalDate, List<Meat>>>
 
-    lateinit var meatsFlow: Flow<Map<LocalDate, List<Meat>>>
-
-    override fun getHistory(): Flow<Map<LocalDate, List<Meat>>> {
+    override fun getAllMeatGroupByDate(): Flow<Map<LocalDate, List<Meat>>> {
         try {
-            meatsFlow = db.meatDao().getAll().map {
+            listMeatByDate = db.meatDao().getAll().map {
                 it.groupBy { it.localDate }
             }
         } catch (e: Exception) {
             Log.e("Database Error", "Error retrieving entry history: " + e.message)
         }
-        return meatsFlow
+        return listMeatByDate
+    }
+
+    override fun getTotalMeatWeightByDate(): Flow<Map<LocalDate, Int>> {
+        return getAllMeatGroupByDate().map { map ->
+            map.mapValues { (_, objects) ->
+                objects.sumOf { it.weightInGrams }
+            }
+        }
     }
 
     override suspend fun insert(meat: Meat) {
@@ -35,7 +42,7 @@ class LocalRepositoryImpl(
         try {
             db.meatDao().update(meat)
         } catch (e: Exception) {
-            Log.e("Database Error", "Error inserting meat entry: " + e.message);
+            Log.e("Database Error", "Error updating meat entry: " + e.message);
         }
     }
 
@@ -43,7 +50,7 @@ class LocalRepositoryImpl(
         try {
             db.meatDao().delete(meat)
         } catch (e: Exception) {
-            Log.e("Database Error", "Error inserting meat entry: " + e.message);
+            Log.e("Database Error", "Error deleting meat entry: " + e.message);
         }
     }
 }

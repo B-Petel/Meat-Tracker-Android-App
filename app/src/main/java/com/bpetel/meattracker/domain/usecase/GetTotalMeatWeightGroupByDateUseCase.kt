@@ -1,14 +1,13 @@
 package com.bpetel.meattracker.domain.usecase
 
-import com.bpetel.meattracker.data.Meat
 import com.bpetel.meattracker.domain.LocalRepository
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
-class GetMeatHistoryPerDateUseCase(
+class GetTotalMeatWeightGroupByDateUseCase(
     private val repository: LocalRepository
 ) {
-    operator fun invoke(): Flow<Map<LocalDate, List<Meat>>> {
-        return repository.getHistory()
+    operator fun invoke(): Flow<Map<LocalDate, Int>> {
+        return repository.getTotalMeatWeightByDate()
     }
 }

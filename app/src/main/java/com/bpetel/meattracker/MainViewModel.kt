@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bpetel.meattracker.data.Meat
 import com.bpetel.meattracker.domain.usecase.DeleteMeatEntryUseCase
-import com.bpetel.meattracker.domain.usecase.GetMeatHistoryPerDateUseCase
+import com.bpetel.meattracker.domain.usecase.GetAllMeatGroupByDateUseCase
 import com.bpetel.meattracker.domain.usecase.SaveMeatEntryUseCase
 import com.bpetel.meattracker.presentation.form.FormState
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,11 +14,11 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class MainViewModel(
-    getMeatUseCase: GetMeatHistoryPerDateUseCase,
+    getMeatUseCase: GetAllMeatGroupByDateUseCase,
+
     private val saveMeatUseCase: SaveMeatEntryUseCase,
     private val deleteMeatUseCase: DeleteMeatEntryUseCase
 ): ViewModel() {
-
     val state = getMeatUseCase.invoke().stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5.seconds),

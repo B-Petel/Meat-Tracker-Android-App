@@ -157,7 +157,7 @@ fun HistoryItem(
             )
             Text(
                 if (meat.weightInGrams < 1000) "${meat.weightInGrams} g"
-                        else "${meat.weightInGrams/1000} kg"
+                        else "${meat.weightInGrams/1000f} kg"
             )
         }
     }
