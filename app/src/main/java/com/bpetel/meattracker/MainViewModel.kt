@@ -7,12 +7,10 @@ import com.bpetel.meattracker.domain.usecase.DeleteMeatEntryUseCase
 import com.bpetel.meattracker.domain.usecase.GetMeatHistoryPerDateUseCase
 import com.bpetel.meattracker.domain.usecase.SaveMeatEntryUseCase
 import com.bpetel.meattracker.presentation.form.FormState
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import kotlin.time.Duration.Companion.seconds
 
 class MainViewModel(
