@@ -33,8 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.bpetel.meattracker.MainViewModel
 import com.bpetel.meattracker.data.Meat
@@ -62,15 +65,23 @@ fun HistoryContent(
     viewModel: MainViewModel,
     state: Map<LocalDate, List<Meat>>
 ) {
-    LazyColumn {
-        state.forEach { map ->
-            item {
-                Text(map.key.toRelativeDateString())
-                HorizontalDivider()
-            }
+    Column() {
+        Text(
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+            text = "Historique",
+            fontSize = TextUnit(32f, TextUnitType.Sp),
+            fontWeight = FontWeight.Bold
+        )
+        LazyColumn {
+            state.forEach { map ->
+                item {
+                    Text(map.key.toRelativeDateString())
+                    HorizontalDivider()
+                }
 
-            items(map.value) { meat ->
-                HistoryDraggableBox(onEdit,viewModel, meat)
+                items(map.value) { meat ->
+                    HistoryDraggableBox(onEdit,viewModel, meat)
+                }
             }
         }
     }
@@ -145,7 +156,8 @@ fun HistoryItem(
                 meat.meatPart
             )
             Text(
-                meat.weightInGrams.toString()
+                if (meat.weightInGrams < 1000) "${meat.weightInGrams} g"
+                        else "${meat.weightInGrams/1000} kg"
             )
         }
     }

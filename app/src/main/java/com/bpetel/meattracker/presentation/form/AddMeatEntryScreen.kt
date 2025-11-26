@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,7 @@ import com.bpetel.meattracker.MainViewModel
 import com.bpetel.meattracker.presentation.utils.MeatType
 import org.koin.androidx.compose.koinViewModel
 
+private val pattern = Regex("^\\d+\$")
 @Composable
 fun AddMeatEntryScreen(
     id: Int?,
@@ -46,11 +48,15 @@ fun AddMeatEntryScreen(
 
     var type by remember { mutableStateOf(type) }
     var parts by remember { mutableStateOf(parts) }
-    var weight by remember { mutableStateOf(weight) }
-    var weightUnit by remember { mutableStateOf(weight.toString()) }
+    var weightString by remember {
+        mutableStateOf(if (weight == 0) "" else weight.toString())
+    }
+
+    val isTypeEmpty by remember(type) { derivedStateOf { type.isEmpty() } }
+    val isPartsEmpty by remember(parts) { derivedStateOf { parts.isEmpty() } }
+    val isWeightEmpty by remember(weightString) { derivedStateOf { weightString.isEmpty() } }
 
     var typeExpanded by remember { mutableStateOf(false) }
-
 
     Column(
         modifier = Modifier.fillMaxSize().padding(32.dp),
@@ -90,7 +96,6 @@ fun AddMeatEntryScreen(
                     }
                 }
             )
-
             Box(
                 modifier = Modifier.matchParentSize().clickable { typeExpanded = !typeExpanded }
             )
@@ -107,24 +112,20 @@ fun AddMeatEntryScreen(
             }
         )
 
-        Box {
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = weightUnit,
-                onValueChange = { weightUnit = it},
-                label = {
-                    Text(
-                        "Weight"
-                    )
-                },
-                suffix = {
-                    if (weight <= 1000)
-                        Text("g")
-                    else Text("kg")
-                },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            )
-        }
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = weightString,
+            onValueChange = { if (it.matches(pattern)) weightString = it },
+            label = {
+                Text(
+                    "Weight"
+                )
+            },
+            suffix = {
+                Text("g")
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
 
         Button(
             onClick = {
@@ -133,11 +134,12 @@ fun AddMeatEntryScreen(
                         id = id,
                         type = type,
                         meatParts = parts,
-                        weightInGrams = weight
+                        weightInGrams = weightString.toIntOrNull() ?: 0
                     )
                 )
                 onSubmit()
-            }
+            },
+            enabled = !isTypeEmpty && !isPartsEmpty && !isWeightEmpty
         ) {
             Text("Submit")
         }

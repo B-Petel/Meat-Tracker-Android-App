@@ -12,7 +12,6 @@ class LocalRepositoryImpl(
 
     lateinit var meatsFlow: Flow<Map<LocalDate, List<Meat>>>
 
-
     override fun getHistory(): Flow<Map<LocalDate, List<Meat>>> {
         try {
             meatsFlow = db.meatDao().getAll().map {
