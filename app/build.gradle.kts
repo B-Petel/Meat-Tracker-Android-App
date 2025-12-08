@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.android.koin)
     implementation(libs.androidx.koin.compose)
+    implementation(libs.jetco)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

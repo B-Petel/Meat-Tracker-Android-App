@@ -3,12 +3,9 @@ package com.bpetel.meattracker.di
 import androidx.room.Room
 import com.bpetel.meattracker.MainViewModel
 import com.bpetel.meattracker.data.AppDatabase
-import com.bpetel.meattracker.data.LocalRepositoryImpl
-import com.bpetel.meattracker.domain.LocalRepository
-import com.bpetel.meattracker.domain.usecase.DeleteMeatEntryUseCase
-import com.bpetel.meattracker.domain.usecase.GetAllMeatGroupByDateUseCase
-import com.bpetel.meattracker.domain.usecase.GetTotalMeatWeightGroupByDateUseCase
-import com.bpetel.meattracker.domain.usecase.SaveMeatEntryUseCase
+import com.bpetel.meattracker.data.repository.MeatRepositoryImpl
+import com.bpetel.meattracker.domain.repository.MeatRepository
+import com.bpetel.meattracker.presentation.history.HistoryViewModel
 import com.bpetel.meattracker.presentation.home.HomeViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.viewModel
@@ -24,17 +21,11 @@ var appModule = module {
         ).build()
     }
 
-    single<LocalRepository> { LocalRepositoryImpl(get()) }
+    single<MeatRepository> { MeatRepositoryImpl(get()) }
 
-    factory { GetAllMeatGroupByDateUseCase(get()) }
-
-    factory { GetTotalMeatWeightGroupByDateUseCase(get()) }
-
-    factory { SaveMeatEntryUseCase(get()) }
-
-    factory { DeleteMeatEntryUseCase(get()) }
-
-    viewModel { MainViewModel(get(), get(),get()) }
+    viewModel { MainViewModel(get()) }
 
     viewModel { HomeViewModel(get()) }
+
+    viewModel { HistoryViewModel(get()) }
 }

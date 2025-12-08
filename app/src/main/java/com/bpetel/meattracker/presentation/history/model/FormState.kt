@@ -1,4 +1,4 @@
-package com.bpetel.meattracker.presentation.form
+package com.bpetel.meattracker.presentation.history.model
 
 data class FormState(
     val id: Int?,

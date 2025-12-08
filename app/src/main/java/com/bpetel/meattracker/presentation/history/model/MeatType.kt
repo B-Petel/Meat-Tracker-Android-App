@@ -1,4 +1,4 @@
-package com.bpetel.meattracker.presentation.utils
+package com.bpetel.meattracker.presentation.history.model
 
 enum class MeatType(val type: String) {
     BEAF("Boeuf"),

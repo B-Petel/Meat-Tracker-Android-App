@@ -1,4 +1,4 @@
-package com.bpetel.meattracker.presentation.form
+package com.bpetel.meattracker.presentation.history.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,8 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.bpetel.meattracker.MainViewModel
-import com.bpetel.meattracker.presentation.utils.MeatType
+import com.bpetel.meattracker.presentation.history.HistoryViewModel
+import com.bpetel.meattracker.presentation.history.model.FormState
+import com.bpetel.meattracker.presentation.history.model.MeatType
 import org.koin.androidx.compose.koinViewModel
 
 private val pattern = Regex("^\\d+\$")
@@ -43,7 +44,7 @@ fun AddMeatEntryScreen(
     weight: Int,
     onSubmit: () -> Unit
 ) {
-    val viewModel: MainViewModel = koinViewModel()
+    val historyViewModel: HistoryViewModel = koinViewModel()
     val stateVertical = rememberScrollState(0)
 
     var type by remember { mutableStateOf(type) }
@@ -129,7 +130,7 @@ fun AddMeatEntryScreen(
 
         Button(
             onClick = {
-                viewModel.onSubmit(
+                historyViewModel.onSubmit(
                     FormState(
                         id = id,
                         type = type,
