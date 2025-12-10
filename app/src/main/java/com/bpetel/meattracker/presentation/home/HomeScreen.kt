@@ -20,16 +20,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bpetel.meattracker.presentation.home.component.GraphFilter
-import com.bpetel.meattracker.presentation.home.component.HistoryGraph
 import com.bpetel.meattracker.presentation.home.component.TotalChart
+import com.developerstring.jetco.ui.charts.barchart.ColumnBarChart
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
-    val uiState = viewModel.uiState.collectAsState()
-    val e = viewModel.e.collectAsState()
+    val state = viewModel.homeState.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -44,9 +43,14 @@ fun HomeScreen(
             )
         }
 
-        GraphFilter(viewModel, uiState.value)
+        GraphFilter(viewModel, state.value)
 
-        if (uiState.value.filteredData.isEmpty()) {
+        if (state.value.totalByPeriod.isNotEmpty()) {
+            ColumnBarChart(
+                modifier = Modifier.padding(16.dp),
+                chartData = state.value.totalByPeriod
+            )
+        } else {
             Card(
                 modifier = Modifier.height(200.dp).padding(8.dp),
                 colors = CardDefaults.cardColors(Color.White)
@@ -57,11 +61,9 @@ fun HomeScreen(
                     text = "Aucune donnée"
                 )
             }
-        } else {
-            HistoryGraph(uiState.value)
         }
-
-        TotalChart(e.value)
+        TotalChart(state.value.totalByMeatType)
     }
 }
+
 

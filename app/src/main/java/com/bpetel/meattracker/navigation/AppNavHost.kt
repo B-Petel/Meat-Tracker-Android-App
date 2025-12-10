@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.bpetel.meattracker.data.model.MeatEntity
+import com.bpetel.meattracker.domain.model.Meat
 import com.bpetel.meattracker.presentation.history.HistoryScreen
 import com.bpetel.meattracker.presentation.history.component.AddMeatEntryScreen
 import com.bpetel.meattracker.presentation.home.HomeScreen
@@ -16,7 +16,7 @@ fun AppNavHost(
     navController: NavHostController,
     startDestination: Screen,
     modifier: Modifier = Modifier,
-    onEdit: (MeatEntity) -> Unit,
+    onEdit: (Meat) -> Unit,
     onSubmit: () -> Unit
 ) {
     NavHost(
@@ -38,6 +38,7 @@ fun AppNavHost(
                 args.type,
                 args.parts,
                 args.weight,
+                args.timestamp,
                 onSubmit = onSubmit
             )
         }

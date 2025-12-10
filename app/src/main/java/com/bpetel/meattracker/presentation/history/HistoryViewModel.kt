@@ -2,41 +2,41 @@ package com.bpetel.meattracker.presentation.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bpetel.meattracker.data.model.MeatEntity
+import com.bpetel.meattracker.domain.model.Meat
 import com.bpetel.meattracker.domain.repository.MeatRepository
 import com.bpetel.meattracker.presentation.history.model.FormState
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.ZoneId
-import java.time.temporal.IsoFields
+import kotlin.time.Duration.Companion.seconds
 
 class HistoryViewModel(
     private val meatRepository: MeatRepository
 ): ViewModel() {
 
+    val state = meatRepository.getAllMeatGroupByDate().stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5.seconds),
+        emptyMap()
+    )
     fun onSubmit(formState: FormState) {
-        val timestamp = System.currentTimeMillis()
-        val date = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate()
-
-        val meatEntity = MeatEntity(
+        val meat = Meat(
             id = formState.id ?: 0,
             type = formState.type,
-            meatPart = formState.meatParts,
-            weightInGrams = formState.weightInGrams,
-            date = timestamp,
-            day = date.dayOfWeek.value,
-            week = date.get(IsoFields.WEEK_BASED_YEAR),
-            month = date.monthValue
+            part = formState.meatParts,
+            weightInGr = formState.weightInGrams,
+            timestamp = formState.date
         )
 
         viewModelScope.launch {
-            formState.id?.let { meatRepository.update(meatEntity) } ?: meatRepository.insert(meatEntity)
+            meatRepository.upsert(meat)
         }
     }
 
-    fun onDelete(meatEntity: MeatEntity) {
+    fun onDelete(meat: Meat) {
         viewModelScope.launch {
-            meatRepository.delete(meatEntity)
+            meatRepository.delete(meat)
         }
     }
 }

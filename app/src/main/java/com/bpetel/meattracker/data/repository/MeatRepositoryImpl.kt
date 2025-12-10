@@ -2,23 +2,33 @@ package com.bpetel.meattracker.data.repository
 
 import android.util.Log
 import com.bpetel.meattracker.data.AppDatabase
-import com.bpetel.meattracker.data.model.MeatEntity
+import com.bpetel.meattracker.data.model.toDomain
+import com.bpetel.meattracker.data.model.toEntity
+import com.bpetel.meattracker.domain.model.Meat
 import com.bpetel.meattracker.domain.repository.MeatRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import java.time.LocalDate
+import java.time.Month
+import java.time.format.TextStyle
 import java.time.temporal.WeekFields
 import java.util.Locale
 
 class MeatRepositoryImpl(
     private val db: AppDatabase
 ): MeatRepository {
-    lateinit var listMeatEntityByDate: Flow<Map<LocalDate, List<MeatEntity>>>
+    lateinit var listMeatEntityByDate: Flow<Map<LocalDate, List<Meat>>>
 
-    override fun getAllMeatGroupByDate(): Flow<Map<LocalDate, List<MeatEntity>>> {
+    override fun getAllMeatGroupByDate(): Flow<Map<LocalDate, List<Meat>>> {
         try {
             listMeatEntityByDate = db.meatDao().getAll().map {
-                it.groupBy { it.localDate }
+                it.onEach { data -> println("Repository : All data: $data") }
+                it.map { entity ->
+                    entity.toDomain()
+                }.groupBy { meat ->
+                    meat.localDate
+                }
             }
         } catch (e: Exception) {
             Log.e("Database Error", "Error retrieving entry history: " + e.message)
@@ -26,52 +36,44 @@ class MeatRepositoryImpl(
         return listMeatEntityByDate
     }
 
-    override fun getTotalMeatWeightByDate(): Flow<Map<LocalDate, Int>> {
-        return getAllMeatGroupByDate().map { map ->
-            map.mapValues { (_, objects) ->
-                objects.sumOf { it.weightInGrams }
-            }
-        }
+    override fun getTotalWeightByWeek(): Flow<Map<String, Float>> {
+        val currentWeek = LocalDate.now().get(WeekFields.of(Locale.getDefault()).weekOfYear())
+        return db.meatDao().getTotalWeightByWeek(currentWeek)
+            .onEach { data -> println("Repository : Week data: $data") }
     }
 
-    override fun getTotalByDayOfWeek(): Flow<Map<Int, Int>> {
-        val currentWeek = LocalDate.now().get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())
-        return db.meatDao().getTotalByDay(currentWeek)
+    override fun getTotalWeightByMonth(): Flow<Map<String, Float>> {
+        val month = Month
+            .of(LocalDate.now().monthValue)
+            .getDisplayName(TextStyle.SHORT, Locale.FRENCH)
+            .toString()
+        return db.meatDao().getTotalWeightByMonth(month)
+            .onEach { data -> println("Repository : Month data: $data") }
     }
 
-    override fun getTotalByWeekOfYear(): Flow<Map<Int, Int>> {
-        val month = LocalDate.now().month.value
-        return db.meatDao().getTotalByWeek(month)
+    override fun getTotalWeightByYear(): Flow<Map<String, Float>> {
+        val year = LocalDate.now().year.toString()
+        return db.meatDao().getTotalWeightByYear(year)
+            .onEach { data -> println("Repository : Year data: $data") }
     }
 
-    override fun getTotalByMonth(): Flow<Map<Int, Int>> {
-        val year = LocalDate.now().year
-        return db.meatDao().getTotalByMonth(year)
+    override fun getTotalWeightByType(): Flow<Map<String, Float>> {
+        return db.meatDao().getTotalWeightByType()
+            .onEach { data -> println("Repository : Type data: $data") }
     }
 
-    override fun getTotalByType(): Flow<Map<String, Float>> {
-        return db.meatDao().getTotalByType()
-    }
-
-    override suspend fun insert(meatEntity: MeatEntity) {
+    override suspend fun upsert(meat: Meat) {
         try {
-            db.meatDao().insert(meatEntity)
+            db.meatDao().upsert(meat.toEntity())
         } catch (e: Exception) {
-            Log.e("Database Error", "Error inserting meat entry: " + e.message)
+            Log.e("Database Error", "Error inserting or updating meat entry: " + e.message);
         }
     }
 
-    override suspend fun update(meatEntity: MeatEntity) {
-        try {
-            db.meatDao().update(meatEntity)
-        } catch (e: Exception) {
-            Log.e("Database Error", "Error updating meat entry: " + e.message);
-        }
-    }
 
-    override suspend fun delete(meatEntity: MeatEntity) {
+    override suspend fun delete(meat: Meat) {
         try {
-            db.meatDao().delete(meatEntity)
+            db.meatDao().delete(meat.toEntity())
         } catch (e: Exception) {
             Log.e("Database Error", "Error deleting meat entry: " + e.message);
         }

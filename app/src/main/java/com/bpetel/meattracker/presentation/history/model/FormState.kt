@@ -4,5 +4,6 @@ data class FormState(
     val id: Int?,
     val type: String,
     val meatParts: String,
-    val weightInGrams: Int
+    val weightInGrams: Int,
+    val date: Long
 )

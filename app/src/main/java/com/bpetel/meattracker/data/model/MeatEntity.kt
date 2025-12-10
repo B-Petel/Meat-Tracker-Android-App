@@ -4,39 +4,65 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.bpetel.meattracker.domain.model.Meat
 import kotlinx.serialization.Serializable
+import java.time.DayOfWeek
 import java.time.Instant
-import java.time.LocalDate
+import java.time.Month
 import java.time.ZoneId
+import java.time.format.TextStyle
+import java.time.temporal.WeekFields
+import java.util.Locale
 
 @Serializable
 @Entity(
     indices = [
-        Index(value = ["week"]),      // Index pour les requêtes par semaine
-        Index(value = ["month"]),     // Index pour les requêtes par mois
-        Index(value = ["day", "week"]), // Index composite pour les requêtes par jour dans une semaine
+        Index(value = ["week"]),
+        Index(value = ["month"]),
         Index(value = ["type"])
     ]
 )
 data class MeatEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    @ColumnInfo("type")
-    val type: String,
-    @ColumnInfo("meat_part")
-    val meatPart: String,
-    @ColumnInfo("weight")
-    val weightInGrams: Int,
-    @ColumnInfo("date")
-    val date: Long,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo("type") val type: String,
+    @ColumnInfo("part") val part: String,
+    @ColumnInfo("weight") val weightInGr: Int,
+    @ColumnInfo("date") val timestamp: Long,
+    @ColumnInfo("day") val dayString: String,
+    @ColumnInfo("week") val weekString: String,
+    @ColumnInfo("month") val monthString: String
+)
 
-    val day: Int,
+fun Meat.toEntity(): MeatEntity {
+    val date = Instant.ofEpochMilli(this.timestamp).atZone(ZoneId.systemDefault()).toLocalDate()
 
-    val week: Int,
+    return MeatEntity(
+        id = this.id,
+        type = this.type,
+        part = this.part,
+        weightInGr = this.weightInGr,
+        timestamp = this.timestamp,
+        dayString = DayOfWeek
+            .of(date.dayOfWeek.value)
+            .getDisplayName(TextStyle.SHORT, Locale.FRENCH)
+            .toString(),
+        weekString = date.get(WeekFields
+            .of(Locale.getDefault()).weekOfYear())
+            .toString(),
+        monthString = Month
+            .of(date.month.value)
+            .getDisplayName(TextStyle.SHORT, Locale.FRENCH)
+            .toString()
+    )
+}
 
-    val month: Int
-) {
-    val localDate: LocalDate
-        get() = Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault()).toLocalDate()
+fun MeatEntity.toDomain(): Meat {
+    return Meat(
+        id = this.id,
+        type = this.type,
+        part = this.part,
+        weightInGr = this.weightInGr,
+        timestamp = this.timestamp,
+    )
 }
 

@@ -89,8 +89,9 @@ class MainActivity : ComponentActivity() {
                                 Screen.AddMeatEntry(
                                     it.id,
                                     it.type,
-                                    it.meatPart,
-                                    it.weightInGrams
+                                    it.part,
+                                    it.weightInGr.toFloat(),
+                                    it.timestamp
                                 )
                             )
                         },

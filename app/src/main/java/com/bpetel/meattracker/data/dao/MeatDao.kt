@@ -2,10 +2,9 @@ package com.bpetel.meattracker.data.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
 import androidx.room.MapColumn
 import androidx.room.Query
-import androidx.room.Update
+import androidx.room.Upsert
 import com.bpetel.meattracker.data.model.MeatEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -22,19 +21,19 @@ interface MeatDao {
         GROUP BY day
     """
     )
-    fun getTotalByDay(week: Int):
-            Flow<Map<@MapColumn("day") Int, @MapColumn("total") Int>>
+    fun getTotalWeightByWeek(week: Int):
+            Flow<Map<@MapColumn("day") String, @MapColumn("total") Float>>
 
     @Query(
         """
         SELECT day, SUM(weight) as total
         FROM MeatEntity
         WHERE month = :month
-        GROUP BY week
+        GROUP BY day
     """
     )
-    fun getTotalByWeek(month: Int):
-            Flow<Map<@MapColumn("day") Int, @MapColumn("total") Int>>
+    fun getTotalWeightByMonth(month: String):
+            Flow<Map<@MapColumn("day") String, @MapColumn("total") Float>>
 
     @Query(
         """
@@ -44,8 +43,8 @@ interface MeatDao {
         GROUP BY month
     """
     )
-    fun getTotalByMonth(year: Int):
-            Flow<Map<@MapColumn("month") Int, @MapColumn("total") Int>>
+    fun getTotalWeightByYear(year: String):
+            Flow<Map<@MapColumn("month") String, @MapColumn("total") Float>>
 
     @Query(
         """
@@ -54,14 +53,11 @@ interface MeatDao {
         GROUP BY type
     """
     )
-    fun getTotalByType():
+    fun getTotalWeightByType():
             Flow<Map<@MapColumn("type") String, @MapColumn("total") Float>>
 
-    @Insert
-    suspend fun insert(meatEntity: MeatEntity)
-
-    @Update
-    suspend fun update(meatEntity: MeatEntity)
+    @Upsert
+    suspend fun upsert(meatEntity: MeatEntity)
 
     @Delete
     suspend fun delete(meatEntity: MeatEntity)

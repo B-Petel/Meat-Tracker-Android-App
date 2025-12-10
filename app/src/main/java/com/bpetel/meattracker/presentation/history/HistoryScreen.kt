@@ -39,8 +39,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import com.bpetel.meattracker.MainViewModel
-import com.bpetel.meattracker.data.model.MeatEntity
+import com.bpetel.meattracker.domain.model.Meat
 import com.bpetel.meattracker.presentation.history.model.DragAnchors
 import com.bpetel.meattracker.presentation.utils.GetMeatIcon
 import com.bpetel.meattracker.presentation.utils.LocalDateToRelativeDateString.toRelativeDateString
@@ -52,26 +51,19 @@ import kotlin.math.roundToInt
 
 @Composable
 fun HistoryScreen(
-    onEdit: (MeatEntity) -> Unit
+    onEdit: (Meat) -> Unit
 ) {
-    val viewModel: MainViewModel = koinViewModel()
     val historyViewModel: HistoryViewModel = koinViewModel()
-    val state = viewModel.state.collectAsState()
+    val state = historyViewModel.state.collectAsState()
 
-    HistoryContent(
-        onEdit,
-        viewModel,
-        historyViewModel,
-        state.value
-    )
+    HistoryContent(onEdit, historyViewModel, state.value)
 }
 
 @Composable
 fun HistoryContent(
-    onEdit: (MeatEntity) -> Unit,
-    viewModel: MainViewModel,
+    onEdit: (Meat) -> Unit,
     historyViewModel: HistoryViewModel,
-    state: Map<LocalDate, List<MeatEntity>>
+    state: Map<LocalDate, List<Meat>>
 ) {
     Column() {
         Text(
@@ -88,11 +80,7 @@ fun HistoryContent(
                 }
 
                 items(map.value) { meat ->
-                    HistoryDraggableBox(
-                        onEdit,
-                        viewModel,
-                        historyViewModel = historyViewModel,
-                        meat)
+                    HistoryDraggableBox(onEdit, historyViewModel, meat)
                 }
             }
         }
@@ -101,10 +89,9 @@ fun HistoryContent(
 
 @Composable
 fun HistoryDraggableBox(
-    onEdit: (MeatEntity) -> Unit,
-    viewModel: MainViewModel,
+    onEdit: (Meat) -> Unit,
     historyViewModel: HistoryViewModel,
-    meatEntity: MeatEntity
+    meat: Meat
 ) {
     val density = LocalDensity.current
     val offsetSize = 200.dp
@@ -133,12 +120,11 @@ fun HistoryDraggableBox(
     Box(
         modifier = Modifier.padding(bottom = 8.dp)
     ) {
-        HistoryItem(meatEntity = meatEntity, dragState = dragState)
+        HistoryItem(meat = meat, dragState = dragState)
         HistoryDragItem(
-            onEdit,
-            viewModel,
+            onEdit = onEdit,
             historyViewModel = historyViewModel,
-            meatEntity,
+            meat = meat,
             dragState = dragState,
             offsetSize = offsetSize)
     }
@@ -146,7 +132,7 @@ fun HistoryDraggableBox(
 
 @Composable
 fun HistoryItem(
-    meatEntity: MeatEntity,
+    meat: Meat,
     dragState: AnchoredDraggableState<DragAnchors>
 ) {
     Row (
@@ -162,21 +148,21 @@ fun HistoryItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painterResource(GetMeatIcon.getMeatIcon(meatEntity.type.lowercase(getDefault()))),
+            painterResource(GetMeatIcon.getMeatIcon(meat.type.lowercase(getDefault()))),
             contentDescription = "",
         )
         Column(
             modifier = Modifier.padding(start = 16.dp)
         ) {
             Text(
-                text = meatEntity.type
+                text = meat.type
             )
             Text(
-                meatEntity.meatPart
+                meat.part
             )
             Text(
-                if (meatEntity.weightInGrams < 1000) "${meatEntity.weightInGrams} g"
-                        else "${meatEntity.weightInGrams/1000f} kg"
+                if (meat.weightInGr < 1000) "${meat.weightInGr} g"
+                        else "${meat.weightInGr/1000f} kg"
             )
         }
     }
@@ -184,10 +170,9 @@ fun HistoryItem(
 
 @Composable
 fun BoxScope.HistoryDragItem(
-    onEdit: (MeatEntity) -> Unit,
-    viewModel: MainViewModel,
+    onEdit: (Meat) -> Unit,
     historyViewModel: HistoryViewModel,
-    meatEntity: MeatEntity,
+    meat: Meat,
     dragState: AnchoredDraggableState<DragAnchors>,
     offsetSize: Dp
 ) {
@@ -209,8 +194,7 @@ fun BoxScope.HistoryDragItem(
                 modifier = Modifier.fillMaxHeight(),
                 onClick = {
                     scope.launch {
-                        onEdit(meatEntity)
-                        //viewModel.toggleDialog(true)
+                        onEdit(meat)
                         dragState.animateTo(DragAnchors.Start)
                     }
                 }
@@ -225,7 +209,7 @@ fun BoxScope.HistoryDragItem(
                 modifier = Modifier.fillMaxHeight(),
                 onClick = {
                     scope.launch {
-                        historyViewModel.onDelete(meatEntity)
+                        historyViewModel.onDelete(meat)
                         dragState.animateTo(DragAnchors.Start)
                     }
                 }

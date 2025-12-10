@@ -13,6 +13,7 @@ sealed class Screen() {
         val id: Int? = null,
         val type: String = "",
         val parts: String = "",
-        val weight: Int = 0
+        val weight: Float = 0f,
+        val timestamp: Long = 0
     ): Screen()
 }

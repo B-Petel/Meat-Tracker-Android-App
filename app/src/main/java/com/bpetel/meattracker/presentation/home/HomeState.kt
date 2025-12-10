@@ -3,6 +3,7 @@ package com.bpetel.meattracker.presentation.home
 import com.bpetel.meattracker.presentation.utils.TimePeriod
 
 data class HomeState(
-    val period:  TimePeriod = TimePeriod.WEEK,
-    val filteredData: Map<Int, Int> = emptyMap()
+    val periodFilter:  TimePeriod = TimePeriod.WEEK,
+    val totalByMeatType: Map<String, Float> = emptyMap(),
+    val totalByPeriod: Map<String, Float> = emptyMap()
 )

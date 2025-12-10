@@ -41,7 +41,8 @@ fun AddMeatEntryScreen(
     id: Int?,
     type: String,
     parts: String,
-    weight: Int,
+    weight: Float,
+    timestamp: Long,
     onSubmit: () -> Unit
 ) {
     val historyViewModel: HistoryViewModel = koinViewModel()
@@ -50,7 +51,10 @@ fun AddMeatEntryScreen(
     var type by remember { mutableStateOf(type) }
     var parts by remember { mutableStateOf(parts) }
     var weightString by remember {
-        mutableStateOf(if (weight == 0) "" else weight.toString())
+        mutableStateOf(if (weight == 0f) "" else weight.toString())
+    }
+    var timestamp by remember {
+        mutableStateOf(if (timestamp == 0L) System.currentTimeMillis() else timestamp)
     }
 
     val isTypeEmpty by remember(type) { derivedStateOf { type.isEmpty() } }
@@ -135,7 +139,8 @@ fun AddMeatEntryScreen(
                         id = id,
                         type = type,
                         meatParts = parts,
-                        weightInGrams = weightString.toIntOrNull() ?: 0
+                        weightInGrams = weightString.toIntOrNull() ?: 0,
+                        date = timestamp
                     )
                 )
                 onSubmit()

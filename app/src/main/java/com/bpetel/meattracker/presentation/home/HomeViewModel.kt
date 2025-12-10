@@ -3,71 +3,41 @@ package com.bpetel.meattracker.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bpetel.meattracker.domain.repository.MeatRepository
+import com.bpetel.meattracker.domain.usecase.GetTotalByPeriodUseCase
 import com.bpetel.meattracker.presentation.utils.TimePeriod
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import java.time.LocalDate
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
+
 class HomeViewModel(
-    meatRepository: MeatRepository
+    meatRepository: MeatRepository,
+    private val getTotalByPeriodUseCase: GetTotalByPeriodUseCase
 ): ViewModel() {
-    val e = meatRepository.getTotalByType().stateIn(
+    private val _homeState = MutableStateFlow(HomeState())
+
+    init {
+        viewModelScope.launch {
+            getTotalByPeriod(_homeState.value.periodFilter)
+        }
+    }
+
+    private val _totalByTypeFlow = meatRepository.getTotalWeightByType().stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5.seconds),
         emptyMap()
     )
 
-    val week = mapOf(
-        1 to 200,
-        2 to 100,
-        4 to 400
-    )
-
-    val month = mapOf(
-        1 to 200,
-        2 to 100,
-        4 to 400,
-        11 to 200,
-        16 to 100,
-        20 to 400,
-        23 to 200,
-        26 to 100,
-        30 to 400
-    )
-
-    val year = mapOf(
-        1 to 200,
-        2 to 200,
-        4 to 400,
-        5 to 300,
-        7 to 100,
-        8 to 400,
-        9 to 600,
-        11 to 100
-    )
-
-    val currentDay = LocalDate.now().dayOfWeek.value
-    val currentMonthDay = LocalDate.now().dayOfMonth
-    val currentMonth = LocalDate.now().month.value
-    val weekData = (0..currentDay-1).associateWith { day -> week[day] ?: 0 }
-    val monthData = (0..currentMonthDay-1).associateWith { day -> month[day] ?: 0 }
-    val yearData = (0..currentMonth-1).associateWith { month -> year[month] ?: 0 }
-
-    private val _homeState = MutableStateFlow(HomeState())
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState = _homeState.flatMapLatest { period ->
-        when(period.period) {
-            TimePeriod.WEEK ->  MutableStateFlow(HomeState(period.period, weekData))// //groupByDayUseCase.invoke()
-            TimePeriod.MONTH -> MutableStateFlow(HomeState(period.period, monthData))  //groupByWeekUseCase.invoke()
-            TimePeriod.YEAR -> MutableStateFlow(HomeState(period.period, yearData)) //groupByMonthUseCase.invoke()
-        }
+    val homeState = combine(_homeState,_totalByTypeFlow) { a, b ->
+        HomeState(
+            periodFilter = a.periodFilter,
+            totalByPeriod = a.totalByPeriod,
+            totalByMeatType = b,
+        )
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5.seconds),
@@ -75,13 +45,22 @@ class HomeViewModel(
     )
 
     fun onFilterClick(period: TimePeriod) {
-        _homeState.value = HomeState(period)
+        viewModelScope.launch {
+            getTotalByPeriod(period)
+        }
     }
 
-    suspend fun getType(flow: Flow<Map<String, Int>>): Map<String, Int> {
-        flow.collect {
-            return@collect
+    suspend fun getTotalByPeriod(period: TimePeriod) {
+        getTotalByPeriodUseCase(period).collect {
+            _homeState.value = HomeState(
+                periodFilter = period,
+                totalByPeriod = if (it.isNotEmpty()) mapIntPeriodToString(it) else emptyMap()
+            )
         }
-        return emptyMap()
+    }
+
+    private fun mapIntPeriodToString(map: Map<String, Float>): Map<String, Float> {
+        val max = map.maxBy { it.value }
+        return if (max.value >= 1000) map.mapValues { it.value / 1000 } else map
     }
 }

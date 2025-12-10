@@ -20,7 +20,7 @@ import com.bpetel.meattracker.presentation.utils.TimePeriod
 @Composable
 fun GraphFilter(
     viewModel: HomeViewModel,
-    uiState: HomeState
+    state: HomeState
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(8.dp),
@@ -35,7 +35,7 @@ fun GraphFilter(
                     onClick = { viewModel.onFilterClick(TimePeriod.WEEK) }
                 ),
                 text = "Week",
-                fontWeight = if (uiState.period == TimePeriod.WEEK) FontWeight.Bold
+                fontWeight = if (state.periodFilter == TimePeriod.WEEK) FontWeight.Bold
                 else FontWeight.Light
             )
             Text(
@@ -43,7 +43,7 @@ fun GraphFilter(
                     onClick = { viewModel.onFilterClick(TimePeriod.MONTH) }
                 ),
                 text = "Month",
-                fontWeight = if (uiState.period == TimePeriod.MONTH) FontWeight.Bold
+                fontWeight = if (state.periodFilter == TimePeriod.MONTH) FontWeight.Bold
                 else FontWeight.Light
             )
             Text(
@@ -51,7 +51,7 @@ fun GraphFilter(
                     onClick = { viewModel.onFilterClick(TimePeriod.YEAR) }
                 ),
                 text = "Year",
-                fontWeight = if (uiState.period == TimePeriod.YEAR) FontWeight.Bold
+                fontWeight = if (state.periodFilter == TimePeriod.YEAR) FontWeight.Bold
                 else FontWeight.Light
             )
         }

@@ -1,10 +1,10 @@
 package com.bpetel.meattracker.di
 
 import androidx.room.Room
-import com.bpetel.meattracker.MainViewModel
 import com.bpetel.meattracker.data.AppDatabase
 import com.bpetel.meattracker.data.repository.MeatRepositoryImpl
 import com.bpetel.meattracker.domain.repository.MeatRepository
+import com.bpetel.meattracker.domain.usecase.GetTotalByPeriodUseCase
 import com.bpetel.meattracker.presentation.history.HistoryViewModel
 import com.bpetel.meattracker.presentation.home.HomeViewModel
 import org.koin.android.ext.koin.androidApplication
@@ -23,9 +23,9 @@ var appModule = module {
 
     single<MeatRepository> { MeatRepositoryImpl(get()) }
 
-    viewModel { MainViewModel(get()) }
+    factory { GetTotalByPeriodUseCase(get()) }
 
-    viewModel { HomeViewModel(get()) }
+    viewModel { HomeViewModel(get(), get()) }
 
     viewModel { HistoryViewModel(get()) }
 }
