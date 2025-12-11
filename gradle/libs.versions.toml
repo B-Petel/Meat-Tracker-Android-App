@@ -12,7 +12,7 @@ nav = "2.9.6"
 room = "2.8.4"
 koin = "4.1.1"
 ksp = "2.3.2"
-foundation = "1.9.4"
+jetco = "1.0.0-beta.7"
 
 [libraries]
 #Default
@@ -42,8 +42,10 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 
 #Dependency Injection
 android-koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
-#androidx-koin-navigation = { group = "io.insert-koin", name = "koin-androidx-navigation", version.ref = "koin" }
 androidx-koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+
+#JetCo Library
+jetco = { group = "com.developerstring.jetco", name = "ui", version.ref = "jetco" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
