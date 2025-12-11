@@ -50,6 +50,7 @@ fun HomeScreen(
                 modifier = Modifier.padding(16.dp),
                 chartData = state.value.totalByPeriod
             )
+            TotalChart(state.value.totalByMeatType)
         } else {
             Card(
                 modifier = Modifier.height(200.dp).padding(8.dp),
@@ -62,7 +63,6 @@ fun HomeScreen(
                 )
             }
         }
-        TotalChart(state.value.totalByMeatType)
     }
 }
 

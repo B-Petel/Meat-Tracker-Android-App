@@ -15,14 +15,15 @@ interface MeatDao {
 
     @Query(
         """
-        SELECT day, SUM(weight) as total
+        SELECT date, SUM(weight) as total
         FROM MeatEntity
         WHERE week = :week
         GROUP BY day
+        ORDER BY date ASC
     """
     )
-    fun getTotalWeightByWeek(week: Int):
-            Flow<Map<@MapColumn("day") String, @MapColumn("total") Float>>
+    fun getTotalWeightByDayWeek(week: Int):
+            Flow<Map<@MapColumn("date") Long, @MapColumn("total") Float>>
 
     @Query(
         """
@@ -30,10 +31,11 @@ interface MeatDao {
         FROM MeatEntity
         WHERE month = :month
         GROUP BY day
+        ORDER BY date ASC
     """
     )
-    fun getTotalWeightByMonth(month: String):
-            Flow<Map<@MapColumn("day") String, @MapColumn("total") Float>>
+    fun getTotalWeightByDayMonth(month: Int):
+            Flow<Map<@MapColumn("day") Int, @MapColumn("total") Float>>
 
     @Query(
         """
@@ -41,10 +43,11 @@ interface MeatDao {
         FROM MeatEntity
         WHERE strftime('%Y', date / 1000, 'unixepoch') = :year
         GROUP BY month
+        ORDER BY date ASC
     """
     )
-    fun getTotalWeightByYear(year: String):
-            Flow<Map<@MapColumn("month") String, @MapColumn("total") Float>>
+    fun getTotalWeightByMonth(year: String):
+            Flow<Map<@MapColumn("month") Int, @MapColumn("total") Float>>
 
     @Query(
         """

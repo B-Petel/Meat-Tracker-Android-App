@@ -11,7 +11,7 @@ data class Meat(
     val type: String = "",
     val part: String = "",
     val weightInGr: Int = 0,
-    val timestamp: Long = 0,
+    val timestamp: Long = 0
 ) {
     val localDate: LocalDate
         get() = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate()

@@ -4,6 +4,7 @@ import androidx.room.Room
 import com.bpetel.meattracker.data.AppDatabase
 import com.bpetel.meattracker.data.repository.MeatRepositoryImpl
 import com.bpetel.meattracker.domain.repository.MeatRepository
+import com.bpetel.meattracker.domain.usecase.GetAllMeatGroupByDateUseCase
 import com.bpetel.meattracker.domain.usecase.GetTotalByPeriodUseCase
 import com.bpetel.meattracker.presentation.history.HistoryViewModel
 import com.bpetel.meattracker.presentation.home.HomeViewModel
@@ -23,9 +24,11 @@ var appModule = module {
 
     single<MeatRepository> { MeatRepositoryImpl(get()) }
 
+    factory { GetAllMeatGroupByDateUseCase(get()) }
+
     factory { GetTotalByPeriodUseCase(get()) }
 
     viewModel { HomeViewModel(get(), get()) }
 
-    viewModel { HistoryViewModel(get()) }
+    viewModel { HistoryViewModel(get(), get()) }
 }
