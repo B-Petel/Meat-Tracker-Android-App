@@ -38,7 +38,6 @@ class MeatRepositoryImpl(
     }
 
     override suspend fun upsert(meat: Meat) {
-        val entity = meat.toEntity()
         try {
             db.meatDao().upsert(meat.toEntity())
         } catch (e: Exception) {

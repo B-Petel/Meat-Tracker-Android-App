@@ -4,20 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bpetel.meattracker.domain.model.Meat
 import com.bpetel.meattracker.domain.repository.MeatRepository
-import com.bpetel.meattracker.domain.usecase.GetAllMeatGroupByDateUseCase
 import com.bpetel.meattracker.presentation.history.model.FormState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class HistoryViewModel(
-    private val meatRepository: MeatRepository,
-    getAllMeatGroupByDateUseCase: GetAllMeatGroupByDateUseCase
+    private val meatRepository: MeatRepository
 ): ViewModel() {
 
-    val state = getAllMeatGroupByDateUseCase().stateIn(
+    val state = meatRepository.getAllMeat().map {
+        it.groupBy { meat -> meat.localDate }
+    }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5.seconds),
         emptyMap()

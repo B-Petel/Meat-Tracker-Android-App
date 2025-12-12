@@ -27,7 +27,7 @@ class GetTotalByPeriodUseCase(
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate()
                         .dayOfWeek
-                        .getDisplayName(TextStyle.SHORT, Locale.FRENCH)
+                        .getDisplayName(TextStyle.SHORT, Locale.getDefault())
                 }
             }
 
@@ -37,7 +37,7 @@ class GetTotalByPeriodUseCase(
             TimePeriod.YEAR -> repository.getTotalWeightByMonth(year).map {
                 it.mapKeys { month ->
                     Month.of(month.key)
-                        .getDisplayName(TextStyle.SHORT, Locale.FRENCH)
+                        .getDisplayName(TextStyle.SHORT, Locale.getDefault())
 
                 }
             }

@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         val items = listOf(
                             BottomNavItem.Home,
+                            BottomNavItem.Stats,
                             BottomNavItem.History
                         )
                         NavigationBar {

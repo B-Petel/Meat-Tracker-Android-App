@@ -10,6 +10,7 @@ import com.bpetel.meattracker.domain.model.Meat
 import com.bpetel.meattracker.presentation.history.HistoryScreen
 import com.bpetel.meattracker.presentation.history.component.AddMeatEntryScreen
 import com.bpetel.meattracker.presentation.home.HomeScreen
+import com.bpetel.meattracker.presentation.stats.StatsScreen
 
 @Composable
 fun AppNavHost(
@@ -42,5 +43,6 @@ fun AppNavHost(
                 onSubmit = onSubmit
             )
         }
+        composable<Screen.Stats> { StatsScreen() }
     }
 }

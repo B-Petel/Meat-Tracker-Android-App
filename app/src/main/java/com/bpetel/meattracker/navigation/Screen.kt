@@ -16,4 +16,7 @@ sealed class Screen() {
         val weight: Float = 0f,
         val timestamp: Long = 0
     ): Screen()
+
+    @Serializable
+    data object Stats: Screen()
 }

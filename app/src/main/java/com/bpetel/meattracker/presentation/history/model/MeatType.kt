@@ -1,7 +1,7 @@
 package com.bpetel.meattracker.presentation.history.model
 
 enum class MeatType(val type: String) {
-    BEAF("Boeuf"),
+    BEEF("Boeuf"),
     CALF("Veau"),
     PORK("Porc"),
     BOAR("Sanglier"),

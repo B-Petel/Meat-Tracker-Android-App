@@ -19,10 +19,9 @@ class HomeViewModel(
     meatRepository: MeatRepository,
     getTotalByPeriodUseCase: GetTotalByPeriodUseCase
 ): ViewModel() {
-    private val _period = MutableStateFlow(TimePeriod.WEEK)
-
+    private val _periodFilterState = MutableStateFlow(TimePeriod.WEEK)
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val _totelByPeriod = _period
+    private val _totelByPeriodState = _periodFilterState
         .flatMapLatest { period ->
             getTotalByPeriodUseCase(period)
         }.stateIn(
@@ -30,26 +29,20 @@ class HomeViewModel(
             SharingStarted.WhileSubscribed(5.seconds),
             emptyMap()
         )
-
-    private val _totalByTypeFlow = meatRepository.getTotalWeightByType().stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5.seconds),
-        emptyMap()
-    )
-
-    val homeState = combine(_period, _totelByPeriod,_totalByTypeFlow) { a, b, c ->
+    val homeState = combine(
+        _periodFilterState,
+        _totelByPeriodState
+    ) { period, total ->
         HomeState(
-            periodFilter = a,
-            totalByPeriod = b,
-            totalByMeatType = c,
+            periodFilter = period,
+            totalByPeriod = total
         )
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5.seconds),
         HomeState()
     )
-
     fun onFilterClick(period: TimePeriod) {
-        _period.value = period
+        _periodFilterState.value = period
     }
 }

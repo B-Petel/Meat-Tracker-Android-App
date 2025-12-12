@@ -65,14 +65,18 @@ fun HistoryContent(
     historyViewModel: HistoryViewModel,
     state: Map<LocalDate, List<Meat>>
 ) {
-    Column() {
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ) {
         Text(
-            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+            modifier = Modifier.padding(16.dp),
             text = "Historique",
             fontSize = TextUnit(32f, TextUnitType.Sp),
             fontWeight = FontWeight.Bold
         )
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier.padding(16.dp)
+        ) {
             state.forEach { map ->
                 item {
                     Text(map.key.toRelativeDateString())
