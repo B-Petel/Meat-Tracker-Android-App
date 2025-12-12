@@ -7,7 +7,7 @@
 	<img src="https://img.shields.io/badge/DI-Koin-purple?style=for-the-badge"/>
 </p>
 
-<h3 align="center">A simple application to track your meat consuption through the year.</h3>
+<h3 align="center">A simple application to track your meat consumption through the year.</h3>
 
 ## ScreenShot
 <p align="center">
