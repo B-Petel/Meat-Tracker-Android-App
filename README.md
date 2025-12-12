@@ -3,11 +3,10 @@
 	<img src="https://img.shields.io/badge/Kotlin-Android-green?style=for-the-badge"/>
 	<img src="https://img.shields.io/badge/Jetpack-Compose-blue?style=for-the-badge"/>
 	<img src="https://img.shields.io/badge/Room-Android-green?style=for-the-badge"/>
+	<img src="https://img.shields.io/badge/DI-Koin-purple?style=for-the-badge"/>
 	<a href="https://github.com/developerchunk/JetCo">
     	<img src="https://img.shields.io/badge/Repository-JetCo Library-orange?style=for-the-badge"/>
   	</a>
-	
-	<img src="https://img.shields.io/badge/DI-Koin-purple?style=for-the-badge"/>
 </p>
 
 <h3 align="center">A simple application to track your meat consumption through the year.</h3>
